@@ -1,0 +1,29 @@
+- name: Firewallの動作確認
+  ansible.builtin.systemd:
+    name: firewalld
+  register: firewalld_status
+
+- name: Firewallのステータス
+  ansible.builtin.debug:
+    var: firewalld_status.status.ActiveState
+
+- name: 制限スクリプトのコピー
+  ansible.builtin.template:
+    src: lock.sh
+    dest: /usr/local/bin
+    mode: 0755
+    owner: root
+    group: root
+
+- name: 解除スクリプトのコピー
+  ansible.builtin.template:
+    src: unlock.sh
+    dest: /usr/local/bin
+    mode: 0755
+    owner: root
+    group: root
+
+- name: 海外IPアドレスをすべて制限
+  ansible.builtin.script: /usr/local/bin/lock.sh
+  become: true
+  changed_when: false

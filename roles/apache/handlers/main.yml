@@ -1,0 +1,9 @@
+- name: reload_httpd
+  ansible.builtin.systemd:
+    name: httpd.service
+    state: reloaded
+
+- name: restart_httpd
+  ansible.builtin.systemd:
+    name: httpd.service
+    state: restarted

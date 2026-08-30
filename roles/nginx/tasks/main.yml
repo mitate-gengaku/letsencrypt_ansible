@@ -1,0 +1,28 @@
+# - name: Nginxの起動
+#   ansible.builtin.systemd:
+#     name: "nginx"
+#     state: started
+#     enabled: yes
+
+- name: Nginxの設定ファイルの編集
+  ansible.builtin.template:
+    src: custom-proxy.conf
+    dest: /etc/nginx/conf.d/custom-proxy.conf
+    mode: 0644
+  # notify:
+  #   - reload_nginx
+  #   - restart_nginx
+
+- name: Nginxの動作確認
+  ansible.builtin.systemd:
+    name: nginx
+  register: nginx_status
+
+- name: Nginxのステータス
+  ansible.builtin.debug:
+    var: nginx_status.status.ActiveState
+
+# - name: Nginxのリスタート
+#   ansible.builtin.systemd:
+#     name: nginx.service
+#     state: restarted

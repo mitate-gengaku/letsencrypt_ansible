@@ -1,0 +1,23 @@
+- name: Let's Encryptで申請時に一時的にFirewallの制限を緩めて、取得する。
+  hosts: localhost
+  vars:
+    domain: african-samurai.com
+    www_domain: www.african-samurai.com
+    admin_email: test@gmail.com
+  roles:
+    # パッケージのインストール
+    # ansible, nginx, certbot
+    
+    - role: common
+
+    # Apacheの設定
+    - role: apache
+
+    # Nginxの設定
+    - role: nginx
+
+    # 海外IP制限スクリプト
+    - role: firewall
+
+    # Certbot
+    - role: certbot

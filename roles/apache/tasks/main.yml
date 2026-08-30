@@ -1,0 +1,40 @@
+- name: ポート80番を閉鎖
+  ansible.builtin.lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^Listen 80$'
+    line: '# Listen 80'
+    backrefs: no
+
+- name: ポート8080番を待ち受けに
+  ansible.builtin.template:
+    src: custom_nginx.conf
+    dest: /etc/httpd/conf.d/custom_nginx.conf
+    mode: 0644
+
+- name: virhostのコピー
+  ansible.builtin.template:
+    src: custom_nginx_host.conf
+    dest: /etc/httpd/conf.d/custom_nginx_virhost.conf
+    mode: 0644
+
+- name: Apacheの起動
+  ansible.builtin.systemd:
+    name: "httpd"
+    state: started
+    enabled: yes
+    
+- name: Apacheの動作確認
+  ansible.builtin.systemd:
+    name: httpd
+  register: httpd_status
+
+- name: Apacheのステータス
+  ansible.builtin.debug:
+    var: httpd_status.status.ActiveState
+
+- name: Apacheの起動が完了するまで待機
+  ansible.builtin.wait_for:
+    port: 8080
+    host: 127.0.0.1
+    state: started
+    timeout: 15

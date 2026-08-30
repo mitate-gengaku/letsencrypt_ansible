@@ -1,0 +1,58 @@
+- name: WebRoot用ディレクトリの作成
+  ansible.builtin.file:
+    path: /var/www/certbot
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: 0755
+    recurse: yes
+
+- name: HTTPのアクセスを許可
+  ansible.posix.firewalld:
+    service: http
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: HTTPSのアクセスを許可
+  ansible.posix.firewalld:
+    service: https
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Pre Hook用ディレクトリの作成
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/pre
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    recurse: yes
+
+- name: Post Hook用ディレクトリの作成
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/post
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    recurse: yes
+
+- name: pre_hook.shのコピー
+  ansible.builtin.template:
+    src: pre_hook.sh
+    dest: /etc/letsencrypt/renewal-hooks/pre/pre_hook.sh
+    mode: 0755
+    owner: root
+    group: root
+
+- name: post_hook.shのコピー
+  ansible.builtin.template:
+    src: post_hook.sh
+    dest: /etc/letsencrypt/renewal-hooks/post/post_hook.sh
+    mode: 0755
+    owner: root
+    group: root
